@@ -1,0 +1,535 @@
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
+from sqlalchemy.ext.asyncio import AsyncSession
+from loguru import logger
+
+from src.deps.db_deps import get_db
+from src.deps.role_checker import require_role
+from src.deps.pagination import pagination_params
+from src.services.ApplicantServices.applicant_service import applicant_service
+from src.services.application_service import application_service
+from src.schemas.applicant_schemas.applicant_schema import ApplicantUpdate, ApplicantResponse
+from src.schemas.applicant_schemas.resume_schema import ResumeCreate, ResumeUpdate, ResumeResponse
+from src.schemas.applicant_schemas.resume_change_schema import ResumeChangeResponse
+from src.schemas.applicant_schemas.favorite_vacancy_schema import (
+    FavoriteVacancyCreate,
+    FavoriteVacancyResponse,
+    FavoriteVacancyStateResponse,
+)
+from src.schemas.skill_schema import SkillCreate, SkillsBatchCreate
+from src.schemas.applicant_schemas.work_experience_schema import (
+    WorkExperienceCreate,
+    WorkExperienceUpdate,
+    WorkExperienceResponse,
+)
+from src.schemas.applicant_schemas.education_schema import (
+    EducationCreate,
+    EducationUpdate,
+    EducationResponse,
+)
+from src.schemas.application_schema import (
+    ApplicationCreate,
+    ApplicationResponse,
+    ApplicationStateResponse,
+)
+from src.models.model import Applicant, User
+from src.core.exceptions import BaseAppException
+
+
+applicant_router = APIRouter(prefix="/applicants", tags=["Соискатели"])
+
+
+async def get_current_applicant(
+    current_user: User = Depends(require_role("applicant")),
+    db: AsyncSession = Depends(get_db),
+) -> Applicant:
+    logger.info(f"Getting applicant for user {current_user.id}")
+
+    applicant = await applicant_service.applicantcrud.get_by_user_id_with_details(
+        db,
+        current_user.id,
+    )
+
+    if not applicant:
+        logger.error(f"Applicant not found for user {current_user.id}")
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Профиль соискателя не найден")
+
+    return applicant
+
+
+# ---------- Профиль ----------
+
+@applicant_router.get("/me", response_model=ApplicantResponse)
+async def get_applicant_profile(
+    current_user: User = Depends(require_role("applicant")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await applicant_service.get_profile(
+        db=db,
+        user_id=current_user.id,
+    )
+
+
+@applicant_router.put("/me", response_model=ApplicantResponse)
+async def update_applicant_profile(
+    update_data: ApplicantUpdate,
+    current_user: User = Depends(require_role("applicant")),
+    db: AsyncSession = Depends(get_db),
+):
+    updated = await applicant_service.update_profile(
+        db,
+        current_user.id,
+        update_data,
+    )
+
+    return updated
+
+
+# ---------- Резюме ----------
+
+@applicant_router.post("/me/resumes", response_model=ResumeResponse, status_code=201)
+async def create_resume(
+    data: ResumeCreate,
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        return await applicant_service.create_resume(db, applicant.id, data)
+
+    except BaseAppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+@applicant_router.get("/me/resumes", response_model=list[ResumeResponse])
+async def list_resumes(
+    pagination: dict = Depends(pagination_params),
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    return await applicant_service.get_resumes(
+        db,
+        applicant.id,
+        **pagination,
+    )
+
+
+@applicant_router.get("/me/resumes/{resume_id}", response_model=ResumeResponse)
+async def get_resume(
+    resume_id: int,
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        return await applicant_service.get_resume_detail(
+            db,
+            resume_id,
+            applicant.id,
+        )
+
+    except BaseAppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+@applicant_router.get(
+    "/me/resumes/{resume_id}/changes",
+    response_model=list[ResumeChangeResponse],
+)
+async def get_resume_changes(
+    resume_id: int,
+    pagination: dict = Depends(pagination_params),
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        return await applicant_service.get_resume_changes(
+            db,
+            resume_id,
+            applicant.id,
+            **pagination,
+        )
+
+    except BaseAppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+@applicant_router.put("/me/resumes/{resume_id}", response_model=ResumeResponse)
+async def update_resume(
+    resume_id: int,
+    data: ResumeUpdate,
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        return await applicant_service.update_resume(
+            db,
+            resume_id,
+            applicant.id,
+            data,
+        )
+
+    except BaseAppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+@applicant_router.delete("/me/resumes/{resume_id}", status_code=204)
+async def delete_resume(
+    resume_id: int,
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        await applicant_service.delete_resume(db, resume_id, applicant.id)
+
+    except BaseAppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+# ---------- Навыки резюме ----------
+
+@applicant_router.post("/me/resumes/{resume_id}/skills", response_model=ResumeResponse)
+async def add_skill_to_resume(
+    resume_id: int,
+    skill_data: SkillCreate,
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        return await applicant_service.add_skill_to_resume(
+            db,
+            resume_id,
+            applicant.id,
+            skill_data.name,
+        )
+
+    except BaseAppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+@applicant_router.delete(
+    "/me/resumes/{resume_id}/skills/{skill_id}",
+    response_model=ResumeResponse,
+)
+async def remove_skill_from_resume(
+    resume_id: int,
+    skill_id: int,
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        return await applicant_service.remove_skill_from_resume(
+            db,
+            resume_id,
+            applicant.id,
+            skill_id,
+        )
+
+    except BaseAppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+@applicant_router.post("/me/resumes/{resume_id}/skills/batch", response_model=ResumeResponse)
+async def add_skills_batch(
+    resume_id: int,
+    skills_data: SkillsBatchCreate,
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        return await applicant_service.add_skills_batch(
+            db,
+            resume_id,
+            applicant.id,
+            skills_data.skills,
+        )
+
+    except BaseAppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+# ---------- Опыт работы ----------
+
+@applicant_router.post(
+    "/me/resumes/{resume_id}/work-experiences",
+    response_model=WorkExperienceResponse,
+)
+async def add_work_experience(
+    resume_id: int,
+    data: WorkExperienceCreate,
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        return await applicant_service.add_work_experience(
+            db,
+            resume_id,
+            applicant.id,
+            data,
+        )
+
+    except BaseAppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+@applicant_router.put(
+    "/me/resumes/{resume_id}/work-experiences/{exp_id}",
+    response_model=WorkExperienceResponse,
+)
+async def update_work_experience(
+    resume_id: int,
+    exp_id: int,
+    data: WorkExperienceUpdate,
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        return await applicant_service.update_work_experience(
+            db,
+            exp_id,
+            resume_id,
+            applicant.id,
+            data,
+        )
+
+    except BaseAppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+@applicant_router.delete(
+    "/me/resumes/{resume_id}/work-experiences/{exp_id}",
+    status_code=204,
+)
+async def delete_work_experience(
+    resume_id: int,
+    exp_id: int,
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        await applicant_service.delete_work_experience(
+            db,
+            exp_id,
+            resume_id,
+            applicant.id,
+        )
+
+    except BaseAppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+# ---------- Образование ----------
+@applicant_router.get(
+    "/me/education",
+    response_model=list[EducationResponse],
+)
+async def get_my_educations(
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        return await applicant_service.get_my_educations(
+            db=db,
+            applicant_id=applicant.id,
+        )
+
+    except BaseAppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+    
+@applicant_router.post("/me/education", response_model=EducationResponse)
+async def add_education(
+    data: EducationCreate,
+    current_user: User = Depends(require_role("applicant")),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        return await applicant_service.add_education(
+            db,
+            current_user.id,
+            data,
+        )
+
+    except BaseAppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+@applicant_router.put("/me/education/{edu_id}", response_model=EducationResponse)
+async def update_education(
+    edu_id: int,
+    data: EducationUpdate,
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        return await applicant_service.update_education(
+            db,
+            edu_id,
+            applicant.id,
+            data,
+        )
+
+    except BaseAppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+@applicant_router.delete("/me/education/{edu_id}", status_code=204)
+async def delete_education(
+    edu_id: int,
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        await applicant_service.delete_education(
+            db,
+            edu_id,
+            applicant.id,
+        )
+
+    except BaseAppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+# ---------- Избранные вакансии ----------
+
+@applicant_router.post(
+    "/me/favorite-vacancies/{vacancy_id}",
+    response_model=FavoriteVacancyResponse,
+)
+async def add_favorite_vacancy(
+    vacancy_id: int,
+    data: FavoriteVacancyCreate,
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    return await applicant_service.add_favorite_vacancy(
+        db=db,
+        applicant_id=applicant.id,
+        vacancy_id=vacancy_id,
+        resume_id=data.resume_id,
+    )
+
+
+@applicant_router.delete(
+    "/me/favorite-vacancies/{vacancy_id}",
+    status_code=204,
+)
+async def remove_favorite_vacancy(
+    vacancy_id: int,
+    resume_id: int = Query(...),
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    await applicant_service.remove_favorite_vacancy(
+        db=db,
+        applicant_id=applicant.id,
+        vacancy_id=vacancy_id,
+        resume_id=resume_id,
+    )
+
+
+@applicant_router.get(
+    "/me/favorite-vacancies",
+    response_model=list[FavoriteVacancyResponse],
+)
+async def get_favorite_vacancies(
+    pagination: dict = Depends(pagination_params),
+    resume_id: int | None = Query(default=None),
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    return await applicant_service.get_favorite_vacancies(
+        db=db,
+        applicant_id=applicant.id,
+        resume_id=resume_id,
+        **pagination,
+    )
+
+
+@applicant_router.get(
+    "/me/favorite-vacancies/{vacancy_id}/state",
+    response_model=FavoriteVacancyStateResponse,
+)
+async def get_favorite_vacancy_state(
+    vacancy_id: int,
+    resume_id: int | None = Query(default=None),
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    return await applicant_service.get_favorite_vacancy_state(
+        db=db,
+        applicant_id=applicant.id,
+        vacancy_id=vacancy_id,
+        resume_id=resume_id,
+    )
+
+
+# ---------- Отклики на вакансии ----------
+
+@applicant_router.post("/me/applications", response_model=ApplicationResponse, status_code=201)
+async def apply_to_vacancy(
+    application_data: ApplicationCreate,
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        return await application_service.apply_to_vacancy(
+            db,
+            applicant.id,
+            application_data,
+        )
+
+    except BaseAppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+@applicant_router.get(
+    "/me/applications/vacancies/{vacancy_id}/state",
+    response_model=ApplicationStateResponse,
+)
+async def get_my_application_state(
+    vacancy_id: int,
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        return await application_service.get_applicant_application_state(
+            db,
+            applicant.id,
+            vacancy_id,
+        )
+
+    except BaseAppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+@applicant_router.get("/me/applications", response_model=list[ApplicationResponse])
+async def get_my_applications(
+    pagination: dict = Depends(pagination_params),
+    applicant=Depends(get_current_applicant),
+    db: AsyncSession = Depends(get_db),
+):
+    return await application_service.get_applicant_applications(
+        db,
+        applicant.id,
+        **pagination,
+    )
+
+@applicant_router.post("/me/photo", response_model=ApplicantResponse)
+async def upload_my_applicant_photo(
+    file: UploadFile = File(...),
+    current_user: User = Depends(require_role("applicant")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await applicant_service.upload_photo(
+        db=db,
+        user_id=current_user.id,
+        file=file,
+    )
+
+
+@applicant_router.delete("/me/photo", response_model=ApplicantResponse)
+async def delete_my_applicant_photo(
+    current_user: User = Depends(require_role("applicant")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await applicant_service.delete_photo(
+        db=db,
+        user_id=current_user.id,
+    )
