@@ -1155,16 +1155,6 @@ export const EmployerVacanciesPage = () => {
                                   >
                                     Открыть
                                   </button>
-
-                                  <button
-                                    type="button"
-                                    className="btn btn--primary vacancy-item__action-btn"
-                                    onClick={() =>
-                                      navigate(`/employer/candidates?vacancyId=${vacancy.id}`)
-                                    }
-                                  >
-                                    Отклики
-                                  </button>
                                 </div>
                               </article>
                             )
