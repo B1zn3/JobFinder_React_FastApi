@@ -3,13 +3,19 @@ import type { InternalAxiosRequestConfig } from 'axios'
 import { env } from '../config/env'
 import { authSession, refreshAccessToken } from '../auth/session'
 
-type RetryableRequestConfig = InternalAxiosRequestConfig & { _retry?: boolean }
+type RetryableRequestConfig = InternalAxiosRequestConfig & {
+  _retry?: boolean
+}
 
 const PUBLIC_AUTH_PATHS = ['/auth/login', '/auth/register', '/auth/refresh']
 
 const isPublicAuthUrl = (url?: string) => {
   if (!url) return false
   return PUBLIC_AUTH_PATHS.some((path) => url.includes(path))
+}
+
+const notifyAuthChanged = () => {
+  window.dispatchEvent(new Event('auth-changed'))
 }
 
 export const publicHttp = axios.create({
@@ -39,6 +45,8 @@ http.interceptors.request.use((config) => {
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
+  } else if (config.headers?.Authorization) {
+    delete config.headers.Authorization
   }
 
   return config
@@ -54,11 +62,23 @@ http.interceptors.response.use(
       return Promise.reject(error)
     }
 
+    if (status !== 401) {
+      return Promise.reject(error)
+    }
+
     if (isPublicAuthUrl(originalRequest.url)) {
       return Promise.reject(error)
     }
 
-    if (status !== 401 || originalRequest._retry) {
+    if (originalRequest._retry) {
+      return Promise.reject(error)
+    }
+
+    const currentAccessToken = authSession.getAccessToken()
+
+    if (!currentAccessToken) {
+      authSession.clear()
+      notifyAuthChanged()
       return Promise.reject(error)
     }
 
@@ -79,15 +99,29 @@ http.interceptors.response.use(
     }
 
     isRefreshing = true
-    const newToken = await refreshAccessToken()
-    isRefreshing = false
-    flushPendingQueue(newToken)
 
-    if (!newToken) {
-      return Promise.reject(error)
+    try {
+      const newToken = await refreshAccessToken()
+
+      isRefreshing = false
+      flushPendingQueue(newToken)
+
+      if (!newToken) {
+        authSession.clear()
+        notifyAuthChanged()
+        return Promise.reject(error)
+      }
+
+      originalRequest.headers.Authorization = `Bearer ${newToken}`
+      return http(originalRequest)
+    } catch (refreshError) {
+      isRefreshing = false
+      flushPendingQueue(null)
+
+      authSession.clear()
+      notifyAuthChanged()
+
+      return Promise.reject(refreshError)
     }
-
-    originalRequest.headers.Authorization = `Bearer ${newToken}`
-    return http(originalRequest)
   },
 )

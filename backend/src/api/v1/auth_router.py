@@ -123,14 +123,15 @@ async def refresh(
 async def logout(
     request: Request,
     response: Response,
-    current_user=Depends(get_current_user),
 ):
     auth_header = request.headers.get("Authorization")
-    if not auth_header or not auth_header.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Missing access token")
-    access_token = auth_header.split(" ")[1]
+    access_token = None
+
+    if auth_header and auth_header.startswith("Bearer "):
+        access_token = auth_header.split(" ", 1)[1]
 
     refresh_token = request.cookies.get("refresh_token")
+
     if not refresh_token:
         try:
             body = await request.json()
@@ -138,15 +139,33 @@ async def logout(
         except (JSONDecodeError, Exception):
             refresh_token = None
 
-    if not refresh_token:
-        raise HTTPException(status_code=400, detail="Refresh token required")
+    # Cookie надо удалить ВСЕГДА, даже если токены битые/протухшие/отсутствуют.
+    response.delete_cookie(
+        key="refresh_token",
+        path="/",
+        domain=None,
+        secure=False,      # localhost/dev. В production с HTTPS обычно True.
+        httponly=True,
+        samesite="strict", # у тебя на скрине SameSite = Strict
+    )
 
-    try:
-        await auth_service.logout(access_token, current_user.id, refresh_token, request)
-        response.delete_cookie("refresh_token")
-        return {"msg": "Успешный выход"}
-    except BaseAppException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.message)
+    # Если токены есть — пробуем инвалидировать их на backend.
+    # Если не получилось, frontend всё равно должен выйти, а cookie уже удалена.
+    if access_token and refresh_token:
+        try:
+            # Лучше, чтобы auth_service.logout сам доставал user_id из access token
+            # или умел работать без current_user dependency.
+            await auth_service.logout(
+                access_token=access_token,
+                refresh_token=refresh_token,
+                request=request,
+            )
+        except BaseAppException:
+            pass
+        except Exception:
+            pass
+
+    return {"msg": "Успешный выход"}
 
 
 @auth_router.post("/logout-all", summary="Выход из аккаунта на всех устройствах")

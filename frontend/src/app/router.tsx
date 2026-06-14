@@ -29,7 +29,6 @@ import { EmployerVacancyDetailsPage } from '../pages/employer/EmployerVacancyDet
 import { EmployerCompanyProfilePage } from '../pages/employer/EmployerCompanyProfilePage'
 import { CompanyApplicationsPage } from '../pages/employer/CompanyApplicationsPage.tsx'
 
-// import { EmployerCandidatesPage } from '../pages/resumes/EmployerCandidatesPage'
 import { EmployerCandidateResumeDetailsPage } from '../pages/resumes/EmployerCandidateResumeDetailsPage'
 
 import { ChatPage } from '../pages/chat/ChatPage'
@@ -53,9 +52,7 @@ const router = createBrowserRouter([
 
       {
         element: <RequireAuth allowedRoles={['applicant', 'company']} />,
-        children: [
-          { path: 'chat', element: <ChatPage /> },
-        ],
+        children: [{ path: 'chat', element: <ChatPage /> }],
       },
 
       {
@@ -79,7 +76,6 @@ const router = createBrowserRouter([
           { path: 'employer/vacancies/create', element: <CreateVacancyPage /> },
           { path: 'employer/vacancies/:vacancyId', element: <EmployerVacancyDetailsPage /> },
           { path: 'employer/company-profile', element: <EmployerCompanyProfilePage /> },
-          // { path: 'employer/candidates', element: <EmployerCandidatesPage /> },
           {
             path: 'employer/candidates/resumes/:resumeId',
             element: <EmployerCandidateResumeDetailsPage />,
@@ -91,12 +87,17 @@ const router = createBrowserRouter([
 
       {
         element: <RequireAuth allowedRoles={['admin']} />,
-        children: [
-          { path: 'admin', element: <AdminPage /> },
-        ],
+        children: [{ path: 'admin', element: <AdminPage /> }],
       },
     ],
   },
 ])
 
-export const AppRouter = () => <RouterProvider router={router} />
+export const AppRouter = () => {
+  return (
+    <RouterProvider
+      router={router}
+      future={{ v7_startTransition: true }}
+    />
+  )
+}

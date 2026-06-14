@@ -1757,7 +1757,7 @@ export const CreateResumePage = () => {
                   Этот шаг можно оставить пустым, если образование не нужно указывать.
                 </p>
 
-                {educations.map((education, index) => {
+                {educations.map((education) => {
                   const educationSearch = education.institution_name.trim().toLowerCase()
 
                   const educationOptions: ComboOption[] = (

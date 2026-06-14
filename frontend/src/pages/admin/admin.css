@@ -585,12 +585,18 @@
 }
 
 .admin-catalog-create {
-  display: flex;
-  gap: 10px;
-  padding: 14px;
-  border-radius: 24px;
-  border: 1px solid #dbe4ef;
-  background: #f8fafc;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  display: grid !important;
+  gap: 14px !important;
+  align-items: center !important;
+  padding: 18px !important;
+  border-radius: 28px !important;
+  border: 1px solid #dbe4ef !important;
+  background: #f8fbff !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
 }
 
 .admin-catalog-create input {
@@ -2002,17 +2008,18 @@
 
 .admin-catalog-create--districts {
   grid-template-columns:
-    minmax(180px, 1fr)
     minmax(220px, 1fr)
-    170px;
+    minmax(220px, 1fr)
+    180px !important;
 }
 
 .admin-catalog-create--cities {
   grid-template-columns:
-    minmax(160px, 1fr)
-    minmax(220px, 1fr)
-    minmax(150px, 0.75fr)
-    170px;
+    minmax(200px, 1fr)
+    minmax(210px, 1fr)
+    minmax(210px, 1fr)
+    minmax(170px, 0.75fr)
+    170px !important;
 }
 
 .admin-catalog-edit-fields {
@@ -2359,5 +2366,1588 @@
 @media (max-width: 700px) {
   .admin-delete-confirm__list {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Admin final polish overrides ===== */
+.admin-dashboard {
+  grid-template-columns: 280px minmax(0, 1fr);
+  background:
+    radial-gradient(circle at 20% 0%, rgba(10, 38, 71, 0.08), transparent 30%),
+    radial-gradient(circle at 100% 0%, rgba(249, 115, 22, 0.10), transparent 28%),
+    #f5f8fc;
+}
+
+.admin-main {
+  padding: 34px 38px 48px;
+}
+
+.admin-main__topbar {
+  padding: 26px 28px;
+  border: 1px solid rgba(219, 228, 239, 0.95);
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 18px 55px rgba(15, 23, 42, 0.07);
+  backdrop-filter: blur(14px);
+}
+
+.admin-main__topbar h2 {
+  font-size: clamp(32px, 4vw, 52px);
+}
+
+.admin-card {
+  border-radius: 34px;
+  box-shadow: 0 18px 55px rgba(15, 23, 42, 0.07);
+}
+
+.admin-card--table {
+  padding: 28px;
+}
+
+.admin-filter-panel {
+  grid-template-columns: minmax(320px, 1.4fr) repeat(3, minmax(190px, 0.8fr)) auto;
+  padding: 16px;
+  border-radius: 28px;
+  background: #f8fbff;
+  align-items: end;
+}
+
+.admin-search-box input,
+.admin-filter-select select,
+.admin-input,
+.admin-select {
+  border-radius: 18px;
+  border-color: #d8e3f0;
+  font-weight: 800;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.admin-filter-select select,
+.admin-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #0a2647 50%),
+    linear-gradient(135deg, #0a2647 50%, transparent 50%);
+  background-position:
+    calc(100% - 22px) 50%,
+    calc(100% - 16px) 50%;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 42px;
+}
+
+.admin-filter-select span,
+.admin-search-box span {
+  color: #60748d;
+}
+
+.admin-primary-btn,
+.admin-action-btn,
+.admin-ghost-btn,
+.admin-danger-btn {
+  border-radius: 16px;
+  font-weight: 900;
+}
+
+.admin-table-card {
+  overflow: hidden;
+  border: 1px solid #dbe4ef;
+  border-radius: 28px;
+  background: #fff;
+}
+
+.admin-table-card__head,
+.admin-table-row {
+  display: grid;
+  gap: 14px;
+  align-items: center;
+}
+
+.admin-table-card__head {
+  min-height: 54px;
+  padding: 0 18px;
+  background: linear-gradient(180deg, #f8fbff, #eef4fb);
+  color: #60748d;
+  font-size: 11px;
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid #dbe4ef;
+}
+
+.admin-table-card__head--admins {
+  grid-template-columns: minmax(260px, 1.2fr) 150px 170px 170px minmax(220px, 0.8fr);
+}
+
+.admin-table-card__head--applications {
+  grid-template-columns: minmax(260px, 1.3fr) minmax(190px, 0.9fr) minmax(190px, 0.9fr) 190px 170px minmax(130px, 0.5fr);
+}
+
+.admin-table-card__body {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-table-row {
+  min-height: 86px;
+  padding: 16px 18px;
+  border-bottom: 1px solid #edf2f7;
+  transition: 0.18s ease;
+}
+
+.admin-table-row:last-child {
+  border-bottom: none;
+}
+
+.admin-table-row:hover {
+  background: #fbfdff;
+}
+
+.admin-table-row--admins {
+  grid-template-columns: minmax(260px, 1.2fr) 150px 170px 170px minmax(220px, 0.8fr);
+}
+
+.admin-table-row--applications {
+  grid-template-columns: minmax(260px, 1.3fr) minmax(190px, 0.9fr) minmax(190px, 0.9fr) 190px 170px minmax(130px, 0.5fr);
+}
+
+.admin-table-row__main {
+  min-width: 0;
+}
+
+.admin-table-row__main strong {
+  display: block;
+  color: #0f172a;
+  font-size: 16px;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.admin-table-row__main span,
+.admin-muted-value {
+  display: block;
+  margin-top: 6px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 1000;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-badge--success {
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  background: rgba(34, 197, 94, 0.10);
+  color: #15803d;
+}
+
+.admin-badge--danger {
+  border: 1px solid rgba(220, 38, 38, 0.22);
+  background: rgba(220, 38, 38, 0.09);
+  color: #b91c1c;
+}
+
+.admin-select--status {
+  min-width: 165px;
+}
+
+.admin-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 42px 20px;
+  color: #64748b;
+  text-align: center;
+}
+
+.admin-empty-state strong {
+  color: #0f172a;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+
+.admin-error-box {
+  margin-bottom: 14px;
+  padding: 16px 18px;
+  border: 1px solid rgba(220, 38, 38, 0.18);
+  border-radius: 20px;
+  background: rgba(220, 38, 38, 0.07);
+  color: #b91c1c;
+  font-weight: 900;
+}
+
+.admin-modal {
+  max-width: min(1180px, calc(100vw - 52px));
+  border-radius: 34px;
+}
+
+.admin-summary-item {
+  border-radius: 24px;
+}
+
+@media (max-width: 1180px) {
+  .admin-filter-panel {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-table-card__head {
+    display: none;
+  }
+
+  .admin-table-row,
+  .admin-table-row--admins,
+  .admin-table-row--applications {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .admin-actions-row {
+    justify-content: flex-start;
+  }
+}
+
+/* =========================================================
+   FINAL FIX: modal overlay, comboboxes/selects, adaptive
+   Paste at end of admin.css or use this file as replacement.
+   ========================================================= */
+
+:root {
+  --admin-bg: #f4f7fb;
+  --admin-surface: #ffffff;
+  --admin-surface-soft: #f8fbff;
+  --admin-text: #0b1324;
+  --admin-text-soft: #52667f;
+  --admin-muted: #708299;
+  --admin-border: #d9e4f1;
+  --admin-border-strong: #b8c8da;
+  --admin-primary: #0a2a4f;
+  --admin-primary-2: #143f70;
+  --admin-primary-soft: rgba(10, 42, 79, 0.08);
+  --admin-danger: #dc2626;
+  --admin-success: #16a34a;
+  --admin-shadow-strong: 0 30px 90px rgba(15, 23, 42, 0.28);
+}
+
+/* ВАЖНО: раньше max-width висел на .admin-modal, из-за этого оверлей занимал не весь экран */
+.admin-modal {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1200 !important;
+  width: 100vw !important;
+  max-width: none !important;
+  min-height: 100vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 24px !important;
+  background: rgba(15, 23, 42, 0.52) !important;
+  backdrop-filter: blur(9px) saturate(115%) !important;
+  overflow: auto !important;
+}
+
+.admin-modal__dialog {
+  position: relative !important;
+  width: min(1040px, calc(100vw - 48px)) !important;
+  max-width: min(1040px, calc(100vw - 48px)) !important;
+  max-height: calc(100vh - 48px) !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 0 !important;
+  border-radius: 30px !important;
+  border: 1px solid rgba(217, 228, 241, 0.95) !important;
+  background: #fff !important;
+  box-shadow: var(--admin-shadow-strong) !important;
+  overscroll-behavior: contain !important;
+}
+
+.admin-modal__header {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 18px !important;
+  margin: 0 !important;
+  padding: 28px 30px 22px !important;
+  border-bottom: 1px solid var(--admin-border) !important;
+  background: radial-gradient(circle at top right, rgba(249, 115, 22, 0.08), transparent 30%), #fff !important;
+}
+
+.admin-modal__header h3 {
+  margin: 0 0 8px !important;
+  color: var(--admin-text) !important;
+  font-size: clamp(24px, 3vw, 34px) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.045em !important;
+}
+
+.admin-modal__header p {
+  margin: 0 !important;
+  color: var(--admin-text-soft) !important;
+  font-size: 15px !important;
+  line-height: 1.55 !important;
+}
+
+.admin-modal__close {
+  width: 52px !important;
+  min-width: 52px !important;
+  height: 52px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  border: 1px solid var(--admin-border) !important;
+  background: var(--admin-surface-soft) !important;
+  color: var(--admin-text-soft) !important;
+  font-size: 30px !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  transition: 0.18s ease !important;
+}
+
+.admin-modal__close:hover {
+  border-color: var(--admin-primary) !important;
+  color: var(--admin-primary) !important;
+  background: #fff !important;
+  transform: rotate(90deg) !important;
+}
+
+.admin-modal__body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  padding: 24px 30px 28px !important;
+}
+
+.admin-modal__footer {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 12px !important;
+  margin: 0 !important;
+  padding: 18px 30px 24px !important;
+  border-top: 1px solid var(--admin-border) !important;
+  background: #fff !important;
+}
+
+/* Закрытый select выглядит нормально. Сам раскрытый список native-select браузер рисует сам. */
+.admin-input,
+.admin-select,
+.admin-search-box input,
+.admin-filter-select select,
+.admin-catalog-create input {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 52px !important;
+  padding: 0 16px !important;
+  border-radius: 18px !important;
+  border: 1px solid var(--admin-border) !important;
+  background-color: #fff !important;
+  color: var(--admin-text) !important;
+  font-size: 15px !important;
+  font-weight: 850 !important;
+  outline: none !important;
+  box-sizing: border-box !important;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease !important;
+}
+
+.admin-input:focus,
+.admin-select:focus,
+.admin-search-box input:focus,
+.admin-filter-select select:focus,
+.admin-catalog-create input:focus {
+  border-color: var(--admin-primary) !important;
+  box-shadow: 0 0 0 4px rgba(10, 42, 79, 0.10) !important;
+}
+
+.admin-select,
+.admin-filter-select select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  cursor: pointer !important;
+  padding-right: 48px !important;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--admin-primary) 50%),
+    linear-gradient(135deg, var(--admin-primary) 50%, transparent 50%) !important;
+  background-position:
+    calc(100% - 25px) 50%,
+    calc(100% - 17px) 50% !important;
+  background-size: 8px 8px, 8px 8px !important;
+  background-repeat: no-repeat !important;
+}
+
+.admin-select option,
+.admin-filter-select option {
+  background: #fff !important;
+  color: var(--admin-text) !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+}
+
+/* Кастомный комбобокс. Работает, если в AdminPage используется AdminSelect, а не обычный <select>. */
+.admin-custom-select,
+.admin-combobox,
+.admin-select-control {
+  position: relative !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  font-family: inherit !important;
+}
+
+.admin-custom-select__trigger,
+.admin-combobox__trigger,
+.admin-select-control__trigger {
+  width: 100% !important;
+  min-height: 52px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 0 16px !important;
+  border-radius: 18px !important;
+  border: 1px solid var(--admin-border) !important;
+  background: #fff !important;
+  color: var(--admin-text) !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  transition: 0.18s ease !important;
+}
+
+.admin-custom-select__trigger:hover,
+.admin-combobox__trigger:hover,
+.admin-select-control__trigger:hover {
+  border-color: var(--admin-border-strong) !important;
+}
+
+.admin-custom-select.is-open .admin-custom-select__trigger,
+.admin-combobox.is-open .admin-combobox__trigger,
+.admin-select-control.is-open .admin-select-control__trigger,
+.admin-custom-select__trigger:focus,
+.admin-combobox__trigger:focus,
+.admin-select-control__trigger:focus {
+  border-color: var(--admin-primary) !important;
+  box-shadow: 0 0 0 4px rgba(10, 42, 79, 0.10) !important;
+  outline: none !important;
+}
+
+.admin-custom-select__value,
+.admin-combobox__value,
+.admin-select-control__value {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.admin-custom-select__arrow,
+.admin-combobox__arrow,
+.admin-select-control__arrow {
+  width: 10px !important;
+  height: 10px !important;
+  flex: 0 0 auto !important;
+  border-right: 2px solid var(--admin-primary) !important;
+  border-bottom: 2px solid var(--admin-primary) !important;
+  transform: rotate(45deg) translateY(-2px) !important;
+  transition: transform 0.18s ease !important;
+}
+
+.admin-custom-select.is-open .admin-custom-select__arrow,
+.admin-combobox.is-open .admin-combobox__arrow,
+.admin-select-control.is-open .admin-select-control__arrow {
+  transform: rotate(225deg) translateY(-2px) !important;
+}
+
+.admin-custom-select__menu,
+.admin-combobox__menu,
+.admin-select-control__menu {
+  position: absolute !important;
+  z-index: 2500 !important;
+  top: calc(100% + 8px) !important;
+  left: 0 !important;
+  right: 0 !important;
+  max-height: 280px !important;
+  padding: 8px !important;
+  border-radius: 20px !important;
+  border: 1px solid var(--admin-border) !important;
+  background: #fff !important;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18) !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+}
+
+.admin-custom-select__option,
+.admin-combobox__option,
+.admin-select-control__option {
+  width: 100% !important;
+  min-height: 44px !important;
+  padding: 10px 12px !important;
+  border: 0 !important;
+  border-radius: 14px !important;
+  background: transparent !important;
+  color: var(--admin-text) !important;
+  font-size: 15px !important;
+  font-weight: 850 !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  transition: 0.15s ease !important;
+}
+
+.admin-custom-select__option:hover,
+.admin-combobox__option:hover,
+.admin-select-control__option:hover,
+.admin-custom-select__option.is-highlighted,
+.admin-combobox__option.is-highlighted,
+.admin-select-control__option.is-highlighted {
+  background: #eef4fb !important;
+}
+
+.admin-custom-select__option.is-selected,
+.admin-combobox__option.is-selected,
+.admin-select-control__option.is-selected {
+  background: linear-gradient(135deg, var(--admin-primary), var(--admin-primary-2)) !important;
+  color: #fff !important;
+}
+
+.admin-filter-panel {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: minmax(320px, 1.35fr) repeat(3, minmax(180px, 0.8fr)) auto !important;
+  gap: 12px !important;
+  align-items: end !important;
+  padding: 16px !important;
+  border-radius: 28px !important;
+  border: 1px solid var(--admin-border) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,0.84), rgba(248,251,255,0.98)), var(--admin-surface-soft) !important;
+}
+
+.admin-search-box,
+.admin-filter-select,
+.admin-field {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  min-width: 0 !important;
+}
+
+.admin-search-box span,
+.admin-filter-select span,
+.admin-field > span {
+  padding-left: 4px !important;
+  color: #61758e !important;
+  font-size: 11px !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+}
+
+.admin-form-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+
+.admin-field--full {
+  grid-column: 1 / -1 !important;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1500px) {
+  .admin-stats-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .admin-filter-panel { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+}
+
+@media (max-width: 1280px) {
+  .admin-dashboard { grid-template-columns: 1fr !important; }
+  .admin-sidebar {
+    position: static !important;
+    height: auto !important;
+    padding: 20px !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--admin-border) !important;
+  }
+  .admin-sidebar__nav { display: grid !important; grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+  .admin-sidebar__footer { display: grid !important; grid-template-columns: 1fr auto auto !important; align-items: center !important; }
+  .admin-main { padding: 28px 24px 40px !important; }
+  .admin-analytics-shell, .admin-catalog-layout { grid-template-columns: 1fr !important; }
+  .admin-analytics-sidebar, .admin-catalog-menu {
+    position: static !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .admin-analytics-sidebar__title, .admin-catalog-menu__title { grid-column: 1 / -1 !important; }
+  .admin-table-card__head { display: none !important; }
+  .admin-table-row, .admin-table-row--admins, .admin-table-row--applications { grid-template-columns: 1fr !important; gap: 12px !important; }
+  .admin-actions-row { justify-content: flex-start !important; }
+}
+
+@media (max-width: 980px) {
+  .admin-main { padding: 24px 18px 34px !important; }
+  .admin-main__topbar { padding: 22px !important; border-radius: 26px !important; }
+  .admin-card, .admin-card--table, .admin-analytics-shell, .admin-chart-card { padding: 20px !important; border-radius: 26px !important; }
+  .admin-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .admin-sidebar__nav { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .admin-sidebar__footer { grid-template-columns: 1fr !important; }
+  .admin-filter-panel { grid-template-columns: 1fr !important; }
+  .admin-analytics-toolbar, .admin-chart-card__head { flex-direction: column !important; }
+  .admin-analytics-actions { width: 100% !important; align-items: stretch !important; }
+  .admin-period-tabs, .admin-source-tabs { width: 100% !important; justify-content: stretch !important; }
+  .admin-period-tabs button, .admin-source-tabs button { flex: 1 1 auto !important; }
+  .admin-catalog-create, .admin-catalog-create--districts, .admin-catalog-create--cities,
+  .admin-catalog-edit-fields, .admin-catalog-edit-fields--districts, .admin-catalog-edit-fields--cities {
+    grid-template-columns: 1fr !important;
+  }
+  .admin-summary-grid, .admin-linked-card-grid, .admin-form-grid, .admin-delete-confirm__list { grid-template-columns: 1fr !important; }
+  .admin-modal { padding: 14px !important; align-items: center !important; }
+  .admin-modal__dialog {
+    width: min(760px, calc(100vw - 28px)) !important;
+    max-width: min(760px, calc(100vw - 28px)) !important;
+    max-height: calc(100vh - 28px) !important;
+    border-radius: 24px !important;
+  }
+  .admin-modal__header { padding: 22px 22px 18px !important; }
+  .admin-modal__body { padding: 20px 22px 24px !important; }
+  .admin-modal__footer { padding: 16px 22px 20px !important; }
+  .admin-actions-row { width: 100% !important; justify-content: stretch !important; }
+  .admin-actions-row > * { flex: 1 1 auto !important; }
+  .admin-select--compact { width: 100% !important; }
+  .admin-pagination { flex-direction: column !important; align-items: stretch !important; }
+  .admin-pagination__controls { justify-content: center !important; }
+}
+
+@media (max-width: 640px) {
+  .admin-main { padding: 18px 12px 28px !important; }
+  .admin-main__topbar { padding: 18px !important; border-radius: 22px !important; }
+  .admin-main__topbar h2 { font-size: 30px !important; }
+  .admin-main__topbar p { font-size: 14px !important; }
+  .admin-sidebar { padding: 18px 12px !important; }
+  .admin-sidebar__nav, .admin-analytics-sidebar, .admin-catalog-menu { grid-template-columns: 1fr !important; }
+  .admin-stats-grid { grid-template-columns: 1fr !important; }
+  .admin-card, .admin-card--table, .admin-analytics-shell, .admin-chart-card, .admin-catalog-content {
+    padding: 16px !important;
+    border-radius: 22px !important;
+  }
+  .admin-card__header { flex-direction: column !important; }
+  .admin-card__header h3, .admin-analytics-toolbar h3 { font-size: 24px !important; }
+  .admin-list-row { flex-direction: column !important; align-items: stretch !important; padding: 16px !important; }
+  .admin-actions-row { flex-direction: column !important; }
+  .admin-actions-row button, .admin-actions-row .admin-select, .admin-actions-row .admin-custom-select,
+  .admin-primary-btn, .admin-action-btn, .admin-ghost-btn, .admin-danger-btn { width: 100% !important; }
+  .admin-filter-panel { padding: 12px !important; border-radius: 22px !important; }
+  .admin-catalog-create { padding: 12px !important; border-radius: 20px !important; }
+  .admin-modal { padding: 0 !important; align-items: stretch !important; }
+  .admin-modal__dialog {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+  }
+  .admin-modal__header { padding: 18px 16px 14px !important; }
+  .admin-modal__header h3 { font-size: 23px !important; }
+  .admin-modal__header p { font-size: 14px !important; }
+  .admin-modal__close { width: 44px !important; min-width: 44px !important; height: 44px !important; font-size: 26px !important; }
+  .admin-modal__body { padding: 16px !important; }
+  .admin-modal__footer { flex-direction: column-reverse !important; padding: 14px 16px 16px !important; }
+  .admin-modal__footer button { width: 100% !important; }
+  .admin-progress-chart__meta { align-items: flex-start !important; flex-direction: column !important; }
+  .admin-pagination__controls button { min-width: 38px !important; padding: 0 10px !important; }
+  .admin-table-row { padding: 14px !important; }
+}
+
+
+/* =========================================================
+   FINAL FIX: admin modal close + custom button comboboxes
+   Put this file as frontend/src/pages/admin/admin.css
+   ========================================================= */
+
+/* modal overlay must cover whole screen */
+.admin-modal {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1200 !important;
+  width: 100vw !important;
+  max-width: none !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 24px !important;
+  background: rgba(15, 23, 42, 0.56) !important;
+  backdrop-filter: blur(10px) saturate(115%) !important;
+  overflow: auto !important;
+}
+
+.admin-modal__dialog {
+  position: relative !important;
+  width: min(1040px, calc(100vw - 48px)) !important;
+  max-width: min(1040px, calc(100vw - 48px)) !important;
+  max-height: calc(100vh - 48px) !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  border-radius: 32px !important;
+  border: 1px solid #dbe4ef !important;
+  background: #fff !important;
+  box-shadow: 0 34px 100px rgba(15, 23, 42, 0.30) !important;
+}
+
+.admin-modal__header {
+  flex: 0 0 auto !important;
+  position: relative !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 20px !important;
+  margin: 0 !important;
+  padding: 30px 32px 22px !important;
+  border-bottom: 1px solid #dbe4ef !important;
+  background:
+    radial-gradient(circle at top right, rgba(249, 115, 22, 0.08), transparent 32%),
+    #fff !important;
+}
+
+.admin-modal__body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  padding: 24px 32px 30px !important;
+}
+
+.admin-modal__footer {
+  flex: 0 0 auto !important;
+  margin: 0 !important;
+  padding: 18px 32px 24px !important;
+  border-top: 1px solid #dbe4ef !important;
+  background: #fff !important;
+}
+
+.admin-modal__close {
+  position: relative !important;
+  width: 50px !important;
+  min-width: 50px !important;
+  height: 50px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  border: 1.5px solid #dbe4ef !important;
+  background: #f8fbff !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease !important;
+}
+
+.admin-modal__close span,
+.admin-modal__close::before,
+.admin-modal__close::after {
+  pointer-events: none !important;
+}
+
+.admin-modal__close::before,
+.admin-modal__close::after {
+  content: '' !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  width: 22px !important;
+  height: 2.5px !important;
+  border-radius: 999px !important;
+  background: #0a2647 !important;
+  transform-origin: center !important;
+}
+
+.admin-modal__close::before {
+  transform: translate(-50%, -50%) rotate(45deg) !important;
+}
+
+.admin-modal__close::after {
+  transform: translate(-50%, -50%) rotate(-45deg) !important;
+}
+
+.admin-modal__close:hover {
+  border-color: #0a2647 !important;
+  background: #fff !important;
+  transform: rotate(90deg) !important;
+  box-shadow: 0 14px 30px rgba(10, 38, 71, 0.12) !important;
+}
+
+/* remove native select look where wrappers still exist */
+.admin-filter-select > select,
+select.admin-select {
+  display: none !important;
+}
+
+/* custom button combobox */
+.admin-custom-select {
+  position: relative !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  font-family: inherit !important;
+}
+
+.admin-custom-select.admin-select--compact,
+.admin-custom-select.admin-select--status {
+  width: auto !important;
+  min-width: 170px !important;
+}
+
+.admin-custom-select__trigger {
+  width: 100% !important;
+  min-height: 52px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  padding: 0 18px !important;
+  border-radius: 20px !important;
+  border: 1.5px solid #d6e2f0 !important;
+  background: #fff !important;
+  color: #0f172a !important;
+  font: inherit !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 10px 22px rgba(15, 23, 42, 0.035) !important;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease,
+    transform 0.18s ease !important;
+}
+
+.admin-custom-select__trigger:hover {
+  border-color: #aebfd1 !important;
+  background: #fbfdff !important;
+}
+
+.admin-custom-select.is-open .admin-custom-select__trigger,
+.admin-custom-select__trigger:focus-visible {
+  border-color: #0a2647 !important;
+  background: #fff !important;
+  box-shadow:
+    0 0 0 5px rgba(10, 38, 71, 0.10),
+    0 15px 30px rgba(15, 23, 42, 0.07) !important;
+  outline: none !important;
+}
+
+.admin-custom-select.is-disabled {
+  opacity: 0.64 !important;
+}
+
+.admin-custom-select.is-disabled .admin-custom-select__trigger {
+  cursor: not-allowed !important;
+  background: #f1f5f9 !important;
+}
+
+.admin-custom-select__value {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.admin-custom-select__value.is-placeholder {
+  color: #8aa0b8 !important;
+}
+
+.admin-custom-select__arrow {
+  position: relative !important;
+  width: 0 !important;
+  height: 0 !important;
+  flex: 0 0 auto !important;
+  border-left: 8px solid transparent !important;
+  border-right: 8px solid transparent !important;
+  border-top: 9px solid #0a2647 !important;
+  transform: none !important;
+  transition: transform 0.18s ease !important;
+}
+
+.admin-custom-select.is-open .admin-custom-select__arrow {
+  transform: rotate(180deg) !important;
+}
+
+.admin-custom-select__menu {
+  position: absolute !important;
+  z-index: 2000 !important;
+  top: calc(100% + 8px) !important;
+  left: 0 !important;
+  right: 0 !important;
+  max-height: 292px !important;
+  padding: 8px !important;
+  border-radius: 22px !important;
+  border: 1px solid #dbe4ef !important;
+  background: #fff !important;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.20) !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+}
+
+.admin-custom-select__option {
+  width: 100% !important;
+  min-height: 46px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 10px 14px !important;
+  border: 0 !important;
+  border-radius: 16px !important;
+  background: transparent !important;
+  color: #0f172a !important;
+  font: inherit !important;
+  font-size: 15px !important;
+  font-weight: 850 !important;
+  line-height: 1.25 !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease !important;
+}
+
+.admin-custom-select__option:hover:not(:disabled) {
+  background: #edf3f9 !important;
+}
+
+.admin-custom-select__option.is-selected {
+  background: linear-gradient(135deg, #0a2647, #144272) !important;
+  color: #fff !important;
+}
+
+.admin-custom-select__option:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.58 !important;
+}
+
+.admin-custom-select__empty {
+  padding: 14px !important;
+  color: #64748b !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+}
+
+/* custom select inside filters */
+.admin-filter-select .admin-custom-select__trigger {
+  min-height: 54px !important;
+  border-radius: 22px !important;
+  padding: 0 20px !important;
+}
+
+/* custom select in table actions */
+.admin-actions-row .admin-custom-select__trigger,
+.admin-table-row .admin-custom-select__trigger {
+  min-height: 46px !important;
+  border-radius: 16px !important;
+  font-size: 14px !important;
+}
+
+.admin-actions-row .admin-custom-select__menu,
+.admin-table-row .admin-custom-select__menu {
+  min-width: 210px !important;
+}
+
+/* custom select in catalogs forms */
+.admin-catalog-create .admin-custom-select__trigger,
+.admin-catalog-edit-fields .admin-custom-select__trigger {
+  min-height: 50px !important;
+}
+
+/* adaptive */
+@media (max-width: 1280px) {
+  .admin-custom-select.admin-select--compact,
+  .admin-custom-select.admin-select--status {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .admin-modal {
+    padding: 12px !important;
+  }
+
+  .admin-modal__dialog {
+    width: min(760px, calc(100vw - 24px)) !important;
+    max-width: min(760px, calc(100vw - 24px)) !important;
+    max-height: calc(100vh - 24px) !important;
+    border-radius: 24px !important;
+  }
+
+  .admin-modal__header {
+    padding: 22px 22px 18px !important;
+  }
+
+  .admin-modal__body {
+    padding: 20px 22px 24px !important;
+  }
+
+  .admin-modal__footer {
+    padding: 16px 22px 20px !important;
+  }
+
+  .admin-custom-select__menu {
+    max-height: 240px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-modal {
+    padding: 0 !important;
+    align-items: stretch !important;
+  }
+
+  .admin-modal__dialog {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+  }
+
+  .admin-modal__header {
+    padding: 18px 16px 14px !important;
+  }
+
+  .admin-modal__body {
+    padding: 16px !important;
+  }
+
+  .admin-modal__footer {
+    flex-direction: column-reverse !important;
+    padding: 14px 16px 16px !important;
+  }
+
+  .admin-modal__footer button {
+    width: 100% !important;
+  }
+
+  .admin-modal__close {
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+  }
+
+  .admin-modal__close::before,
+  .admin-modal__close::after {
+    width: 20px !important;
+  }
+
+  .admin-filter-select .admin-custom-select__trigger,
+  .admin-custom-select__trigger {
+    min-height: 50px !important;
+    border-radius: 18px !important;
+  }
+
+  .admin-custom-select__menu {
+    position: fixed !important;
+    top: auto !important;
+    left: 12px !important;
+    right: 12px !important;
+    bottom: 12px !important;
+    max-height: 55vh !important;
+    border-radius: 24px !important;
+  }
+}
+
+/* scrollbar for dropdowns */
+.admin-custom-select__menu {
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(10, 38, 71, 0.30) transparent !important;
+}
+
+.admin-custom-select__menu::-webkit-scrollbar {
+  width: 10px !important;
+}
+
+.admin-custom-select__menu::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.admin-custom-select__menu::-webkit-scrollbar-thumb {
+  background: rgba(10, 38, 71, 0.26) !important;
+  border-radius: 999px !important;
+  border: 2px solid transparent !important;
+  background-clip: padding-box !important;
+}
+
+
+/* =========================================================
+   FINAL FIX: catalogs parent fields + stable combobox + modal close
+   ========================================================= */
+
+/* custom select root must NEVER be hidden by old native select rules */
+.admin-custom-select,
+.admin-custom-select.admin-custom-select--catalog,
+.admin-custom-select.admin-select--compact,
+.admin-custom-select.admin-select--status {
+  display: block !important;
+  position: relative !important;
+  min-width: 0 !important;
+}
+
+/* hide only real native selects, not custom components */
+.admin-filter-select > select,
+select.admin-select {
+  display: none !important;
+}
+
+/* Catalog create/edit: name + parent selects + button. Cities have область -> район -> тип. */
+.admin-catalog-create {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: minmax(240px, 1.1fr) minmax(180px, 0.9fr) 180px !important;
+  gap: 14px !important;
+  align-items: center !important;
+  padding: 18px !important;
+  border-radius: 28px !important;
+  border: 1px solid #dbe4ef !important;
+  background: #f8fbff !important;
+  overflow: visible !important;
+}
+
+.admin-catalog-create--districts {
+  grid-template-columns: minmax(240px, 1fr) minmax(240px, 1fr) 180px !important;
+}
+
+.admin-catalog-create--cities {
+  grid-template-columns:
+    minmax(220px, 1fr)
+    minmax(220px, 1fr)
+    minmax(220px, 1fr)
+    minmax(170px, 0.7fr)
+    180px !important;
+}
+
+.admin-catalog-create input,
+.admin-catalog-create .admin-custom-select,
+.admin-catalog-create .admin-primary-btn {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.admin-catalog-create .admin-primary-btn {
+  height: 54px !important;
+  min-height: 54px !important;
+  grid-column: auto !important;
+}
+
+.admin-catalog-edit-fields {
+  display: grid !important;
+  grid-template-columns: minmax(220px, 1fr) !important;
+  gap: 12px !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+.admin-catalog-edit-fields--districts {
+  grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr) !important;
+}
+
+.admin-catalog-edit-fields--cities {
+  grid-template-columns:
+    minmax(190px, 1fr)
+    minmax(190px, 1fr)
+    minmax(190px, 1fr)
+    minmax(160px, 0.75fr) !important;
+}
+
+.admin-catalog-create .admin-custom-select__trigger,
+.admin-catalog-edit-fields .admin-custom-select__trigger,
+.admin-filter-select .admin-custom-select__trigger,
+.admin-actions-row .admin-custom-select__trigger,
+.admin-table-row .admin-custom-select__trigger {
+  box-sizing: border-box !important;
+}
+
+/* Do not move rows on hover: moving rows with opened absolute dropdown caused visual jumps. */
+.admin-list-row:hover,
+.admin-table-row:hover {
+  transform: none !important;
+}
+
+.admin-list-row,
+.admin-table-row,
+.admin-actions-row {
+  overflow: visible !important;
+}
+
+.admin-list-row:has(.admin-custom-select.is-open),
+.admin-table-row:has(.admin-custom-select.is-open) {
+  position: relative !important;
+  z-index: 120 !important;
+  transform: none !important;
+}
+
+.admin-actions-row .admin-custom-select,
+.admin-table-row .admin-custom-select {
+  flex: 0 0 auto !important;
+}
+
+.admin-actions-row .admin-custom-select__menu,
+.admin-table-row .admin-custom-select__menu {
+  left: auto !important;
+  right: 0 !important;
+  width: max-content !important;
+  min-width: 220px !important;
+  max-width: min(360px, calc(100vw - 32px)) !important;
+  z-index: 9999 !important;
+}
+
+.admin-filter-select .admin-custom-select__menu,
+.admin-catalog-create .admin-custom-select__menu,
+.admin-catalog-edit-fields .admin-custom-select__menu {
+  left: 0 !important;
+  right: 0 !important;
+  width: auto !important;
+  min-width: 100% !important;
+  max-width: none !important;
+  z-index: 9999 !important;
+}
+
+.admin-custom-select__menu {
+  padding: 8px !important;
+  border-radius: 22px !important;
+  background: #ffffff !important;
+  border: 1px solid #dbe4ef !important;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22) !important;
+}
+
+.admin-custom-select__option {
+  width: 100% !important;
+  min-height: 46px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  padding: 10px 14px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 14px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #0f172a !important;
+  font-size: 15px !important;
+  font-weight: 850 !important;
+  line-height: 1.25 !important;
+  text-align: left !important;
+  white-space: normal !important;
+}
+
+.admin-custom-select__option + .admin-custom-select__option {
+  margin-top: 2px !important;
+}
+
+.admin-custom-select__option:hover:not(:disabled) {
+  background: #edf3f9 !important;
+  color: #0a2647 !important;
+}
+
+.admin-custom-select__option.is-selected {
+  background: linear-gradient(135deg, #0a2647, #144272) !important;
+  color: #ffffff !important;
+}
+
+/* Modal close: fixed circle, centered CSS cross, no broken glyph. */
+.admin-modal__close {
+  position: relative !important;
+  width: 52px !important;
+  min-width: 52px !important;
+  height: 52px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  border: 1.5px solid #d6e2f0 !important;
+  background: #f8fbff !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+  flex: 0 0 auto !important;
+}
+
+.admin-modal__close span {
+  display: none !important;
+}
+
+.admin-modal__close::before,
+.admin-modal__close::after {
+  content: '' !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  width: 22px !important;
+  height: 3px !important;
+  border-radius: 999px !important;
+  background: #0a2647 !important;
+  transform-origin: center !important;
+}
+
+.admin-modal__close::before {
+  transform: translate(-50%, -50%) rotate(45deg) !important;
+}
+
+.admin-modal__close::after {
+  transform: translate(-50%, -50%) rotate(-45deg) !important;
+}
+
+.admin-modal__close:hover {
+  border-color: #0a2647 !important;
+  background: #ffffff !important;
+  transform: none !important;
+  box-shadow: 0 14px 30px rgba(10, 38, 71, 0.12) !important;
+}
+
+.admin-modal__close:hover::before,
+.admin-modal__close:hover::after {
+  background: #144272 !important;
+}
+
+@media (max-width: 1500px) {
+  .admin-catalog-create--cities,
+  .admin-catalog-edit-fields--cities {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .admin-catalog-create--cities .admin-primary-btn,
+  .admin-catalog-create--cities .admin-custom-select:nth-of-type(3),
+  .admin-catalog-edit-fields--cities .admin-custom-select:nth-of-type(3) {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+@media (max-width: 980px) {
+  .admin-catalog-create,
+  .admin-catalog-create--districts,
+  .admin-catalog-create--cities,
+  .admin-catalog-edit-fields,
+  .admin-catalog-edit-fields--districts,
+  .admin-catalog-edit-fields--cities {
+    grid-template-columns: 1fr !important;
+  }
+
+  .admin-catalog-create--cities .admin-primary-btn,
+  .admin-catalog-create--cities .admin-custom-select:nth-of-type(3),
+  .admin-catalog-edit-fields--cities .admin-custom-select:nth-of-type(3) {
+    grid-column: auto !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-modal__close {
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+  }
+
+  .admin-modal__close::before,
+  .admin-modal__close::after {
+    width: 19px !important;
+    height: 2.5px !important;
+  }
+
+  .admin-actions-row .admin-custom-select__menu,
+  .admin-table-row .admin-custom-select__menu {
+    left: 0 !important;
+    right: 0 !important;
+    width: auto !important;
+    min-width: 100% !important;
+    max-width: none !important;
+  }
+}
+/* ===== FIX: города в справочнике — строго 2 строки ===== */
+
+.admin-catalog-create--cities {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  grid-template-areas:
+    "city city region region"
+    "district district type add" !important;
+  gap: 14px !important;
+  align-items: center !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+}
+
+.admin-catalog-create--cities > :nth-child(1) {
+  grid-area: city !important;
+}
+
+.admin-catalog-create--cities > :nth-child(2) {
+  grid-area: region !important;
+}
+
+.admin-catalog-create--cities > :nth-child(3) {
+  grid-area: district !important;
+}
+
+.admin-catalog-create--cities > :nth-child(4) {
+  grid-area: type !important;
+}
+
+.admin-catalog-create--cities > :nth-child(5) {
+  grid-area: add !important;
+}
+
+.admin-catalog-create--cities > * {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+.admin-catalog-create--cities .admin-primary-btn {
+  width: 100% !important;
+  height: 58px !important;
+  min-width: 0 !important;
+  grid-column: auto !important;
+}
+
+/* чтобы старые правила не растягивали кнопку */
+.admin-catalog-create--cities .admin-primary-btn,
+.admin-catalog-create--cities button.admin-primary-btn {
+  justify-self: stretch !important;
+}
+
+/* на узких экранах всё в столбик */
+@media (max-width: 900px) {
+  .admin-catalog-create--cities {
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+      "city"
+      "region"
+      "district"
+      "type"
+      "add" !important;
+  }
+}
+/* ===== FIX: редактирование городов — строго 2 строки ===== */
+
+.admin-catalog-edit-fields--cities {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  grid-template-areas:
+    "city city region region"
+    "district district type type" !important;
+  gap: 14px !important;
+  align-items: center !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+
+.admin-catalog-edit-fields--cities > :nth-child(1) {
+  grid-area: city !important;
+}
+
+.admin-catalog-edit-fields--cities > :nth-child(2) {
+  grid-area: region !important;
+}
+
+.admin-catalog-edit-fields--cities > :nth-child(3) {
+  grid-area: district !important;
+}
+
+.admin-catalog-edit-fields--cities > :nth-child(4) {
+  grid-area: type !important;
+}
+
+.admin-catalog-edit-fields--cities > * {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+.admin-catalog-edit-fields--cities .admin-input,
+.admin-catalog-edit-fields--cities .admin-custom-select,
+.admin-catalog-edit-fields--cities .admin-custom-select__trigger {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+/* строка редактирования должна переносить кнопки ниже, а не сжимать поля */
+.admin-list-row:has(.admin-catalog-edit-fields--cities) {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: 16px !important;
+  align-items: start !important;
+}
+
+.admin-list-row:has(.admin-catalog-edit-fields--cities) .admin-actions-row {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  min-width: 180px !important;
+}
+
+.admin-list-row:has(.admin-catalog-edit-fields--cities) .admin-actions-row button {
+  width: 100% !important;
+  height: 54px !important;
+}
+
+/* если места мало — кнопки уходят третьей строкой */
+@media (max-width: 1300px) {
+  .admin-list-row:has(.admin-catalog-edit-fields--cities) {
+    grid-template-columns: 1fr !important;
+  }
+
+  .admin-list-row:has(.admin-catalog-edit-fields--cities) .admin-actions-row {
+    flex-direction: row !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .admin-list-row:has(.admin-catalog-edit-fields--cities) .admin-actions-row button {
+    flex: 1 1 0 !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .admin-catalog-edit-fields--cities {
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+      "city"
+      "region"
+      "district"
+      "type" !important;
+  }
+
+  .admin-list-row:has(.admin-catalog-edit-fields--cities) .admin-actions-row {
+    flex-direction: column !important;
   }
 }

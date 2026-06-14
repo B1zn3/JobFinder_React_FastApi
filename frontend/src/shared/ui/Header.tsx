@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { authSession } from '../../shared/auth/session'
+import { useQueryClient } from '@tanstack/react-query'
+import { authSession, logoutSession } from '../../shared/auth/session'
 import { useUnreadChatsCount } from '../hooks/useUnreadChatsCount'
 import './Header.css'
 
@@ -117,17 +118,31 @@ const ChatBadge = ({ count }: { count: number }) => {
 export const Header = () => {
   const location = useLocation()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [authVersion, setAuthVersion] = useState(0)
 
   const burgerRef = useRef<HTMLButtonElement | null>(null)
   const menuRef = useRef<HTMLDivElement | null>(null)
 
-  const isAuthenticated = !!authSession.getAccessToken()
+  const isAuthenticated = Boolean(authSession.getAccessToken())
   const role = authSession.getRole()
 
   const unreadChatsQuery = useUnreadChatsCount()
-  const unreadChatsCount = unreadChatsQuery.data || 0
+  const unreadChatsCount = isAuthenticated ? unreadChatsQuery.data || 0 : 0
+
+  useEffect(() => {
+    const handleAuthChanged = () => {
+      setAuthVersion((prev) => prev + 1)
+    }
+
+    window.addEventListener('auth-changed', handleAuthChanged)
+
+    return () => {
+      window.removeEventListener('auth-changed', handleAuthChanged)
+    }
+  }, [])
 
   useEffect(() => {
     setIsMobileMenuOpen(false)
@@ -162,12 +177,23 @@ export const Header = () => {
     }
   }, [])
 
-  const handleLogout = () => {
-    setIsMobileMenuOpen(false)
-    authSession.clear()
-    window.dispatchEvent(new Event('auth-changed'))
-    navigate('/', { replace: true })
-  }
+const handleLogout = async () => {
+  setIsMobileMenuOpen(false)
+
+  sessionStorage.setItem('jobfinder_logout_redirect', '1')
+
+  // СНАЧАЛА запрещаем refresh и чистим localStorage
+  authSession.markLoggedOut()
+
+  // Потом убиваем активные react-query запросы
+  await queryClient.cancelQueries()
+  queryClient.clear()
+
+  // Потом просим backend удалить refresh_token cookie
+  await logoutSession()
+
+  navigate('/', { replace: true })
+} 
 
   const closeMenu = () => setIsMobileMenuOpen(false)
 
@@ -183,6 +209,8 @@ export const Header = () => {
       <ChatBadge count={unreadChatsCount} />
     </span>
   )
+
+  void authVersion
 
   return (
     <header className="header">

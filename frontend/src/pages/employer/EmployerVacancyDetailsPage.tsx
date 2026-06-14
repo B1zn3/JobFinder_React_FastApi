@@ -111,7 +111,7 @@ const fetchVacancy = async (vacancyId: number): Promise<VacancyResponse> => {
 
 const fetchCatalog = async <T,>(catalogName: string): Promise<T[]> => {
   const { data } = await http.get(`/public/catalogs/${catalogName}`, {
-    params: { skip: 0, limit: catalogName === 'cities' ? 1000 : 500 },
+    params: { skip: 0, limit: catalogName === 'cities' ? 1000 : 100 },
   })
 
   return toArray<T>(data)
@@ -119,7 +119,7 @@ const fetchCatalog = async <T,>(catalogName: string): Promise<T[]> => {
 
 const fetchProfessions = async (): Promise<CatalogItem[]> => {
   const { data } = await http.get('/public/professions', {
-    params: { skip: 0, limit: 500 },
+    params: { skip: 0, limit: 100 },
   })
 
   return toArray<CatalogItem>(data)
@@ -264,16 +264,6 @@ const formatSalary = (min: number, max: number, currency: string) => {
   }
 
   return `до ${max.toLocaleString('ru-RU')} ${currency}`
-}
-
-const formatDateTime = (value?: string | null) => {
-  if (!value) return '—'
-
-  const date = new Date(value)
-
-  if (Number.isNaN(date.getTime())) return '—'
-
-  return date.toLocaleString('ru-RU')
 }
 
 const findActiveStatusId = (statuses: CatalogItem[]) => {

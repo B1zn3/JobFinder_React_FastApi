@@ -18,7 +18,10 @@ type GeoRegion = {
   id: number
   name: string
 }
-
+type CompanyTypeOption = {
+  id: number
+  name: string
+}
 type GeoDistrict = {
   id: number
   name: string
@@ -60,6 +63,10 @@ type CompanyProfile = {
   logo?: string | null
   founded_year?: number | null
   employee_count?: number | null
+
+  company_type_id?: number | null
+  company_type_name?: string | null
+
   vacancies_count?: number | null
   vacancies?: VacancySummary[]
   city_ids?: number[] | null
@@ -92,9 +99,9 @@ type CompanyFieldErrors = {
   website: string
   foundedYear: string
   employeeCount: string
+  companyType: string
   offices: string
 }
-
 type PasswordInputProps = {
   value: string
   placeholder: string
@@ -112,6 +119,7 @@ const emptyCompanyFieldErrors = (): CompanyFieldErrors => ({
   website: '',
   foundedYear: '',
   employeeCount: '',
+  companyType: '',
   offices: '',
 })
 
@@ -839,6 +847,7 @@ export const EmployerCompanyProfilePage = () => {
   const [website, setWebsite] = useState('')
   const [foundedYear, setFoundedYear] = useState('')
   const [employeeCount, setEmployeeCount] = useState('')
+  const [companyTypeId, setCompanyTypeId] = useState('')
 
   const [selectedCityIds, setSelectedCityIds] = useState<number[]>([])
   const [officeRegionId, setOfficeRegionId] = useState('')
@@ -882,7 +891,12 @@ export const EmployerCompanyProfilePage = () => {
     retry: false,
     refetchOnWindowFocus: false,
   })
-
+const companyTypesQuery = useQuery({
+  queryKey: ['company-profile-company-types'],
+  queryFn: () => fetchCatalog<CompanyTypeOption>('company_types'),
+  retry: false,
+  refetchOnWindowFocus: false,
+})
   const districtsQuery = useQuery({
     queryKey: ['company-profile-districts'],
     queryFn: () => fetchCatalog<GeoDistrict>('districts'),
@@ -1018,32 +1032,27 @@ const deleteLogoMutation = useMutation({
   const regions = regionsQuery.data || []
   const districts = districtsQuery.data || []
   const cities = citiesQuery.data || []
+  const companyTypes = companyTypesQuery.data || []
 
   const normalizedLogo = profile?.logo?.trim() || ''
   const displayName = name.trim() || profile?.name || 'Компания'
   const initials = getCompanyInitials(displayName)
   const vacanciesCount = profile?.vacancies_count ?? profile?.vacancies?.length ?? 0
-
-  const selectedCities = useMemo(() => {
-    return selectedCityIds
-      .map((cityId) => cities.find((city) => city.id === cityId))
-      .filter(Boolean) as GeoCity[]
-  }, [cities, selectedCityIds])
-
   const completionPercent = useMemo(() => {
     const checks = [
-      Boolean(name.trim()),
-      Boolean(description.trim()),
-      Boolean(website.trim()),
-      Boolean(foundedYear.trim()),
-      Boolean(employeeCount.trim()),
-      selectedCityIds.length > 0,
-      Boolean(normalizedLogo),
-    ]
+  Boolean(name.trim()),
+  Boolean(companyTypeId),
+  Boolean(description.trim()),
+  Boolean(website.trim()),
+  Boolean(foundedYear.trim()),
+  Boolean(employeeCount.trim()),
+  selectedCityIds.length > 0,
+  Boolean(normalizedLogo),
+]
 
     const completed = checks.filter(Boolean).length
     return Math.round((completed / checks.length) * 100)
-  }, [description, employeeCount, foundedYear, name, normalizedLogo, selectedCityIds.length, website])
+  }, [companyTypeId, description, employeeCount, foundedYear, name, normalizedLogo, selectedCityIds.length, website])
 
   const yearsOnMarket = useMemo(() => {
     const year = parsePositiveInteger(foundedYear)
@@ -1062,6 +1071,7 @@ const deleteLogoMutation = useMutation({
     setWebsite(profile.website || '')
     setFoundedYear(profile.founded_year ? String(profile.founded_year) : '')
     setEmployeeCount(profile.employee_count ? String(profile.employee_count) : '')
+    setCompanyTypeId(profile.company_type_id ? String(profile.company_type_id) : '')
 
     const idsFromCities = Array.isArray(profile.cities)
       ? profile.cities
@@ -1152,7 +1162,11 @@ const deleteLogoMutation = useMutation({
     if (name.trim().length > 255) {
       errors.name = 'Название компании должно быть не длиннее 255 символов.'
     }
-
+    if (!companyTypeId) {
+      errors.companyType = 'Выберите тип компании.'
+    } else if (!companyTypes.some((item) => String(item.id) === companyTypeId)) {
+      errors.companyType = 'Выбранный тип компании не найден.'
+    }
     if (description.trim().length > 5000) {
       errors.description = 'Описание должно быть не длиннее 5000 символов.'
     }
@@ -1203,6 +1217,7 @@ const deleteLogoMutation = useMutation({
         website: website.trim() ? normalizeUrl(website) : null,
         founded_year: parsedFoundedYear,
         employee_count: parsedEmployeeCount,
+        company_type_id: Number(companyTypeId),
         city_ids: selectedCityIds,
       })
     } catch {
@@ -1534,6 +1549,7 @@ const handleDeleteLogo = async () => {
                     />
                     <FieldError message={fieldErrors.name} />
                   </label>
+                  
 
                   <label className="company-profile-field company-profile-field--full">
                     <span>Описание</span>
@@ -1592,8 +1608,27 @@ const handleDeleteLogo = async () => {
                     />
                     <FieldError message={fieldErrors.employeeCount} />
                   </label>
-                </div>
+                <div className="company-profile-field">
+                    <CompanyGeoSelect
+                      label="Тип компании"
+                      placeholder="Выберите тип компании"
+                      value={companyTypeId}
+                      options={companyTypes}
+                      openKey="company-type"
+                      openSelect={openOfficeSelect}
+                      setOpenSelect={setOpenOfficeSelect}
+                      isLoading={companyTypesQuery.isLoading}
+                      emptyText="Типы компаний не найдены"
+                      onChange={(value) => {
+                        setCompanyTypeId(value)
+                        setFieldErrors((prev) => ({ ...prev, companyType: '' }))
+                      }}
+                    />
 
+                    <FieldError message={fieldErrors.companyType} />
+                  </div>
+                </div>
+                      
                 <CompanyOfficeSelector
                   cities={cities}
                   regions={regions}

@@ -60,7 +60,6 @@ class AdminService:
     "educational-institutions": EducationalInstitution,
     "company-types": CompanyType,
 }
-
     def _get_catalog_model(self, catalog_name: str):
         model = self.catalog_map.get(catalog_name)
         if not model:
@@ -675,26 +674,18 @@ class AdminService:
         limit: int,
         search: Optional[str] = None,
     ):
+        catalog_name = catalog_name.strip()
         model = self._get_catalog_model(catalog_name)
 
         if catalog_name == "districts":
-            stmt = select(District).options(joinedload(District.region)).order_by(District.id)
-        elif catalog_name == "cities":
             stmt = (
-                select(City)
-                .options(
-                    joinedload(City.district).joinedload(District.region),
-                    joinedload(City.settlement_type),
-                )
-                .order_by(City.id)
+                select(District)
+                .options(joinedload(District.region))
+                .order_by(District.name.asc())
             )
-        else:
-            stmt = select(model).order_by(model.id)
 
-        if search:
-            value = f"%{search.lower()}%"
-
-            if catalog_name == "districts":
+            if search:
+                value = f"%{search.lower().strip()}%"
                 stmt = stmt.join(District.region).where(
                     or_(
                         func.lower(District.name).like(value),
@@ -702,7 +693,22 @@ class AdminService:
                         func.cast(District.id, String).like(value),
                     )
                 )
-            elif catalog_name == "cities":
+
+            result = await db.execute(stmt.offset(skip).limit(limit))
+            return result.scalars().unique().all()
+
+        if catalog_name == "cities":
+            stmt = (
+                select(City)
+                .options(
+                    joinedload(City.district).joinedload(District.region),
+                    joinedload(City.settlement_type),
+                )
+                .order_by(City.name.asc())
+            )
+
+            if search:
+                value = f"%{search.lower().strip()}%"
                 stmt = (
                     stmt.join(City.district)
                     .join(District.region)
@@ -717,16 +723,23 @@ class AdminService:
                         )
                     )
                 )
-            else:
-                stmt = stmt.where(
-                    or_(
-                        func.lower(model.name).like(value),
-                        func.cast(model.id, String).like(value),
-                    )
+
+            result = await db.execute(stmt.offset(skip).limit(limit))
+            return result.scalars().unique().all()
+
+        stmt = select(model).order_by(model.name.asc())
+
+        if search:
+            value = f"%{search.lower().strip()}%"
+            stmt = stmt.where(
+                or_(
+                    func.lower(model.name).like(value),
+                    func.cast(model.id, String).like(value),
                 )
+            )
 
         result = await db.execute(stmt.offset(skip).limit(limit))
-        return result.scalars().unique().all()
+        return result.scalars().all()
 
     async def _get_default_settlement_type(self, db: AsyncSession) -> SettlementType:
         result = await db.execute(select(SettlementType).where(SettlementType.name == "г."))
@@ -1049,24 +1062,24 @@ class AdminService:
         )
 
         return {
-            "users_total": users_total,
-            "users_active": users_active,
-            "users_blocked": users_blocked,
-            "companies_total": companies_total,
-            "applicants_total": applicants_total,
-            "vacancies_total": vacancies_total,
-            "applications_total": applications_total,
-            "admins_total": admins_total,
-            "vacancies_by_status": vacancies_by_status,
-            "applications_by_status": applications_by_status,
-            "users_by_role": users_by_role,
-            "registrations": registrations,
-            "top_cities": top_cities,
-            "top_professions": top_professions,
-            "recent_users": recent_users_result.scalars().all(),
-            "recent_vacancies": recent_vacancies_result.scalars().all(),
-            "recent_applications": recent_applications_result.scalars().all(),
-        }
+    "users_total": users_total,
+    "users_active": users_active,
+    "users_blocked": users_blocked,
+    "companies_total": companies_total,
+    "applicants_total": applicants_total,
+    "vacancies_total": vacancies_total,
+    "applications_total": applications_total,
+    "admins_total": admins_total,
+    "vacancies_by_status": vacancies_by_status,
+    "applications_by_status": applications_by_status,
+    "users_by_role": users_by_role,
+    "registrations": registrations,
+    "top_cities": top_cities,
+    "top_professions": top_professions,
+    "recent_users": recent_users_result.scalars().unique().all(),
+    "recent_vacancies": recent_vacancies_result.scalars().unique().all(),
+    "recent_applications": recent_applications_result.scalars().unique().all(),
+}
 
     async def list_users(
         self,
@@ -1436,6 +1449,46 @@ class AdminService:
         await db.delete(vacancy)
         await db.commit()
 
+
+    def _application_to_admin_dict(self, application: Application) -> dict[str, Any]:
+        vacancy = application.vacancy
+        resume = application.resume
+        applicant = resume.applicant if resume else None
+        company = vacancy.company if vacancy else None
+        city = vacancy.city if vacancy else None
+        profession = resume.profession if resume and resume.profession else (vacancy.profession if vacancy else None)
+
+        applicant_name = self._full_name(applicant)
+        city_name = "—"
+
+        if city:
+            city_parts = [
+                city.settlement_type.name if city.settlement_type else None,
+                city.name,
+                city.district.name if city.district else None,
+                city.district.region.name if city.district and city.district.region else None,
+            ]
+            city_name = ", ".join(part for part in city_parts if part)
+
+        return {
+            "id": application.id,
+            "vacancy_id": application.vacancy_id,
+            "resume_id": application.resume_id,
+            "status": application.status,
+            "created_at": application.created_at,
+            "updated_at": application.updated_at,
+            "cover_letter": application.cover_letter,
+            "vacancy_title": vacancy.title if vacancy else None,
+            "company_name": company.name if company else None,
+            "applicant_id": applicant.id if applicant else None,
+            "applicant_name": applicant_name,
+            "resume_profession": profession.name if profession else None,
+            "city_name": city_name,
+            "salary_min": vacancy.salary_min if vacancy else None,
+            "salary_max": vacancy.salary_max if vacancy else None,
+            "currency": vacancy.currency.name if vacancy and vacancy.currency else None,
+        }
+
     async def list_applications(
         self,
         db: AsyncSession,
@@ -1453,7 +1506,9 @@ class AdminService:
             .options(
                 joinedload(Application.vacancy).joinedload(Vacancy.company),
                 joinedload(Application.vacancy).joinedload(Vacancy.city).joinedload(City.district).joinedload(District.region),
-                joinedload(Vacancy.city).joinedload(City.settlement_type),
+                joinedload(Application.vacancy).joinedload(Vacancy.city).joinedload(City.settlement_type),
+                joinedload(Application.vacancy).joinedload(Vacancy.profession),
+                joinedload(Application.vacancy).joinedload(Vacancy.currency),
                 joinedload(Application.resume).joinedload(Resume.profession),
                 joinedload(Application.resume).joinedload(Resume.applicant),
             )
@@ -1479,7 +1534,9 @@ class AdminService:
             .options(
                 joinedload(Application.vacancy).joinedload(Vacancy.company),
                 joinedload(Application.vacancy).joinedload(Vacancy.city).joinedload(City.district).joinedload(District.region),
-                joinedload(Vacancy.city).joinedload(City.settlement_type),
+                joinedload(Application.vacancy).joinedload(Vacancy.city).joinedload(City.settlement_type),
+                joinedload(Application.vacancy).joinedload(Vacancy.profession),
+                joinedload(Application.vacancy).joinedload(Vacancy.currency),
                 joinedload(Application.resume).joinedload(Resume.profession),
                 joinedload(Application.resume).joinedload(Resume.applicant),
             )

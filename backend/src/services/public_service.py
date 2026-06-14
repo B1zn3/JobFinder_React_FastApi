@@ -6,8 +6,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload, selectinload
 
 from src.models.model import (
+    Application,
     City,
     Company,
+    CompanyType,
     Currency,
     District,
     EducationalInstitution,
@@ -39,6 +41,8 @@ class PublicService:
         "skills": Skill,
         "currencies": Currency,
         "statuses": Status,
+        "company_types": CompanyType,
+        "applications": Application,
     }
 
     @staticmethod

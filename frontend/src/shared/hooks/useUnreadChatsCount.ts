@@ -6,8 +6,15 @@ type ChatUnreadCountResponse = {
   unread_count: number
 }
 
-const fetchUnreadChatsCount = async () => {
-  const { data } = await http.get<ChatUnreadCountResponse>('/chats/unread-count')
+const fetchUnreadChatsCount = async (signal?: AbortSignal) => {
+  if (!authSession.getAccessToken() || authSession.isLoggedOut()) {
+    return 0
+  }
+
+  const { data } = await http.get<ChatUnreadCountResponse>(
+    '/chats/unread-count',
+    { signal },
+  )
 
   return Number(data?.unread_count || 0)
 }
@@ -17,16 +24,18 @@ export const useUnreadChatsCount = () => {
   const role = authSession.getRole?.()
 
   const canLoadUnreadCount = Boolean(
-    token && (role === 'applicant' || role === 'company'),
+    token &&
+      !authSession.isLoggedOut() &&
+      (role === 'applicant' || role === 'company'),
   )
 
   return useQuery({
     queryKey: ['chat-unread-count'],
-    queryFn: fetchUnreadChatsCount,
+    queryFn: ({ signal }) => fetchUnreadChatsCount(signal),
     enabled: canLoadUnreadCount,
-    refetchInterval: 5000,
-    refetchIntervalInBackground: true,
+    refetchInterval: canLoadUnreadCount ? 5000 : false,
+    refetchIntervalInBackground: false,
     staleTime: 1000,
-    retry: 1,
+    retry: false,
   })
 }

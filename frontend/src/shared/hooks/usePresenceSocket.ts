@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { AUTH_CHANGED_EVENT, authSession } from '../auth/session'
 
+
 const getWsBaseUrl = () => {
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
 
@@ -11,12 +12,11 @@ const getWsBaseUrl = () => {
 }
 
 const getAccessToken = () => {
-  return (
-    authSession.getAccessToken?.() ||
-    localStorage.getItem('access_token') ||
-    localStorage.getItem('token') ||
-    ''
-  )
+  if (authSession.isLoggedOut?.()) {
+    return ''
+  }
+
+  return authSession.getAccessToken?.() || ''
 }
 
 type PresencePayload = {
@@ -178,7 +178,6 @@ const refreshPresenceSocket = () => {
 
   connectPresenceSocket(token)
 }
-
 export const usePresenceSocket = () => {
   useEffect(() => {
     shouldReconnect = true
