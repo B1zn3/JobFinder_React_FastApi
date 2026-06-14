@@ -4,7 +4,7 @@
   
   import { useNavigate } from 'react-router-dom'
   import { http } from '../../shared/api/http'
-  import { authSession, logoutSession } from '../../shared/auth/session'
+  import { authSession, logoutSession  } from '../../shared/auth/session'
   import showPasswordIcon from '../../assets/показать_пароль.png'
   import hidePasswordIcon from '../../assets/скрыть_пароль.png'
   import './admin.css'
@@ -330,25 +330,6 @@
 
     return {}
   }
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
-
-const handleLogout = async () => {
-
-  sessionStorage.setItem('jobfinder_logout_redirect', '1')
-
-  // СНАЧАЛА запрещаем refresh и чистим localStorage
-  authSession.markLoggedOut()
-
-  // Потом убиваем активные react-query запросы
-  await queryClient.cancelQueries()
-  queryClient.clear()
-
-  // Потом просим backend удалить refresh_token cookie
-  await logoutSession()
-
-  navigate('/', { replace: true })
-} 
   const safeNumber = (value: unknown): number | null => {
     if (typeof value === 'number' && Number.isFinite(value)) return value
     if (typeof value === 'string' && value.trim()) {
@@ -1500,7 +1481,14 @@ const handleLogout = async () => {
       setFormError(text)
       setMessage(text)
     }
-
+    const handleLogout = async () => {
+  sessionStorage.setItem('jobfinder_logout_redirect', '1');
+  authSession.markLoggedOut();
+  await queryClient.cancelQueries();
+  queryClient.clear();
+  await logoutSession();
+  navigate('/admin/login', { replace: true });
+};
     const toggleUserMutation = useMutation({
       mutationFn: async (user: UserAdmin) => {
         if (user.id === 1) throw new Error('Главного администратора нельзя заблокировать.')
@@ -3063,10 +3051,7 @@ const handleLogout = async () => {
             >
               Изменить свои данные
             </button>
-            <button type="button" className="admin-sidebar__danger" onClick={handleLogout}>
-              Выйти
-            </button>
-          </div>
+<button type="button" className="admin-sidebar__danger" onClick={handleLogout}>Выйти</button>          </div>
         </aside>
 
         <main className="admin-main">
